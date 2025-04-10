@@ -1,0 +1,9 @@
+---
+title: "Project Concepts of Data Science 2024-2025"
+format: gfm
+---
+
+
+
+Implementation of a Ternary Search Tree (TST) in Python, focusing on clear, efficient, and benchmarked code. This repository tracks our collaborative development, testing, and performance analysis using HPC infrastructure.
+
