@@ -36,3 +36,5 @@ def is_sorted(data):
 data = list(range(4))[::-1]
 print(data)
 print(is_sorted(data))
+data2 = [4, 3, 2, 1]
+print(data2)
