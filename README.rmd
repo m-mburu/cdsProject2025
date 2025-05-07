@@ -6,8 +6,8 @@ output: github_document
 
 
 Students:
-- **Moses Mburu** (2024)
-- **Aidan McCarthy** (2024)
+- **Moses Mburu [2469245]** 
+- **Anita Kerubo [2469491]** 
 
 Implementation of a Ternary Search Tree (TST) in Python, focusing on clear, efficient, and benchmarked code. This repository tracks our collaborative development, testing, and performance analysis using HPC infrastructure.
 
