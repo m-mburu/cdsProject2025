@@ -1,8 +1,7 @@
-Project Concepts of Data Science 2024-2025
-================
+# Project Concepts of Data Science 2024-2025
 Moses Mburu, Anita Kerubo
 
-Students: - **Moses Mburu** (2024) - **Aidan McCarthy** (2024)
+Students: - **Moses Mburu \[2469245\]** - **Anita Kerubo \[2469491\]**
 
 Implementation of a Ternary Search Tree (TST) in Python, focusing on
 clear, efficient, and benchmarked code. This repository tracks our
