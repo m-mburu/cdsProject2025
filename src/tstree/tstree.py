@@ -101,3 +101,17 @@ class TSTreeNode:
                 self._gt._all_strings(prefix, strings)
             return strings
             
+    def  __len__(self) -> int:
+        """
+        Get the total number of nodes in the subtree rooted at this node.
+        
+        return: Total node count (including this node and all children).
+        """
+        length = 1
+        if self._lt is not None:
+            length += len(self._lt)
+        if self._eq is not None:
+            length += len(self._eq)
+        if self._gt is not None:
+            length += len(self._gt)
+        return length
