@@ -65,7 +65,6 @@ class TSTreeNode:
             if self._eq is None:
                 return False
             return self._eq._search(string, index + 1)
-        
 
     def _all_strings(self, prefix: str = "", strings: list = None) -> None:
         """
@@ -83,28 +82,28 @@ class TSTreeNode:
             strings = []
         # Add current character to prefix
             current_prefix = prefix + self._char
-            
+
             # If this is the end of a word, add it to results
             if self._is_end:
                 strings.append(current_prefix)
-            
+
             # Continue search in left child (same prefix)
             if self._lt is not None:
                 self._lt._all_strings(prefix, strings)
-            
+
             # Continue search in equal child (with updated prefix)
             if self._eq is not None:
                 self._eq._all_strings(current_prefix, strings)
-            
+
             # Continue search in right child (same prefix)
             if self._gt is not None:
                 self._gt._all_strings(prefix, strings)
             return strings
-            
+
     def  __len__(self) -> int:
         """
         Get the total number of nodes in the subtree rooted at this node.
-        
+
         return: Total node count (including this node and all children).
         """
         length = 1
@@ -115,3 +114,28 @@ class TSTreeNode:
         if self._gt is not None:
             length += len(self._gt)
         return length
+
+    def _to_string(self, indent: str = " ", label: str = "") -> str:
+        """
+        Convert the tree to a string with informative formatting.
+        :param indent: Current indentation level
+        :param label: Label to show node relationship (< for lt, = for eq, > for gt)
+        :return: The string representation of the tree.
+        """
+        # Mark the end of words with an 1 else 0
+        end_marker = "1" if self._is_end else "0"
+        repr_string = f"{indent}{label}{self._char}{end_marker}"
+
+        # Show left subtree (characters less than current)
+        if self._lt is not None:
+            repr_string += "\n" + self._lt._to_string(indent + "  ", "< ")
+
+        # Show equal subtree (next characters in sequence)
+        if self._eq is not None:
+            repr_string += "\n" + self._eq._to_string(indent + "  ", "= ")
+
+        # Show right subtree (characters greater than current)
+        if self._gt is not None:
+            repr_string += "\n" + self._gt._to_string(indent + "  ", "> ")
+
+        return repr_string
