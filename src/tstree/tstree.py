@@ -65,3 +65,39 @@ class TSTreeNode:
             if self._eq is None:
                 return False
             return self._eq._search(string, index + 1)
+        
+
+    def _all_strings(self, prefix: str = "", strings: list = None) -> None:
+        """
+        all_strings recursively collects all complete words that exist in the tree.
+        It builds words by traversing the tree nodes while maintaining a prefix.
+        If it reaches a node marked as the end of a word, it adds the current prefix
+        to the results list. The method explores all three branches of each node
+        (left, equal, and right) to ensure that all possible words are found and returned.
+
+        :param prefix: Current prefix being built
+        :param strings: List to store results
+        :return: List of all words in the tree
+        """
+        if strings is None:
+            strings = []
+        # Add current character to prefix
+            current_prefix = prefix + self._char
+            
+            # If this is the end of a word, add it to results
+            if self._is_end:
+                strings.append(current_prefix)
+            
+            # Continue search in left child (same prefix)
+            if self._lt is not None:
+                self._lt._all_strings(prefix, strings)
+            
+            # Continue search in equal child (with updated prefix)
+            if self._eq is not None:
+                self._eq._all_strings(current_prefix, strings)
+            
+            # Continue search in right child (same prefix)
+            if self._gt is not None:
+                self._gt._all_strings(prefix, strings)
+            return strings
+            
