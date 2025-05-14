@@ -1,5 +1,5 @@
 class BtreeNode:
-     
+
     def __init__(self, string):
         self._string = string
         self._lt, self._gt = None, None
@@ -17,7 +17,7 @@ class BtreeNode:
                 self._gt = BtreeNode(string)
             else:
                 self._gt._insert(string)
-    
+
     def _search(self, string):
         if string == self._string:
             return True
@@ -25,8 +25,7 @@ class BtreeNode:
             return self._lt is not None and self._lt._search(string)
         else:
             return self._gt is not None and self._gt._search(string)
-        
-    
+
     def _all_strings(self):
         strings = [self._string]
         if self._lt is not None:
@@ -53,3 +52,39 @@ class BtreeNode:
 
     def __repr__(self):
         return self._string
+
+
+class Btree:
+
+    def __init__(self):
+        self._root = None
+
+    def insert(self, string):
+        if self._root is None:
+            self._root = BtreeNode(string)
+        else:
+            self._root._insert(string)
+
+    def search(self, string):
+        if self._root is None:
+            return False
+        else:
+            return self._root._search(string)
+
+    def all_strings(self):
+        if self._root is None:
+            return []
+        else:
+            return self._root._all_strings()
+
+    def __len__(self):
+        if self._root is None:
+            return 0
+        else:
+            return len(self._root)
+
+    def __repr__(self):
+        if self._root is None:
+            return 'empty tree'
+        else:
+            return self._root._to_string('')
