@@ -139,3 +139,37 @@ class TSTreeNode:
             repr_string += "\n" + self._gt._to_string(indent + "  ", "> ")
 
         return repr_string
+    
+    def __repr__(self) -> str:
+        """
+        Get the string representation of the node.
+        :return: The string representation of the node.
+        """
+        return self._char
+
+class TSTree:
+    """A ternary search tree."""
+    def __init__(self):
+        """
+        Initialize the tree.
+        """
+        self._root: TSTreeNode = None  
+
+    def insert(self, string: str) -> None:
+        """
+        Insert a string into the tree.
+        :param string: The string to insert.
+        """
+        if self._root is None:
+            self._root = TSTreeNode(string[0])
+        self._root._insert(string)
+        
+    def search(self, string: str) -> bool:
+        """
+        Search for a string in the tree.
+        :param string: The string to search for.
+        :return: True if the string is found, False otherwise.
+        """
+        if self._root is None:
+            return False
+        return self._root._search(string)
