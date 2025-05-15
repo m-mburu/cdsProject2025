@@ -162,6 +162,9 @@ class TSTree:
         Insert a string into the tree.
         :param string: The string to insert.
         """
+        if not string:
+            return
+
         if self._root is None:
             self._root = TSTreeNode(string[0])
         self._root._insert(string)
@@ -175,3 +178,30 @@ class TSTree:
         if self._root is None:
             return False
         return self._root._search(string)
+
+    def all_strings(self) -> list:
+        """
+        Collect all strings in the tree.
+        :return: List of all strings in the tree.
+        """
+        if self._root is None:
+            return []
+        return self._root._all_strings()
+
+    def __len__(self) -> int:
+        """
+        Get the length of the tree.
+        :return: The length of the tree.
+        """
+        if self._root is None:
+            return 0
+        return len(self._root)
+
+    def __repr__(self) -> str:
+        """
+        Get the string representation of the tree.
+        :return: The string representation of the tree.
+        """
+        if self._root is None:
+            return "Empty tree"
+        return self._root._to_string("", label="")
