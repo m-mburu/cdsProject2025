@@ -66,7 +66,7 @@ class TSTreeNode:
                 return False
             return self._eq._search(string, index + 1)
 
-    def _all_strings(self, prefix: str = "", strings: list = None) -> None:
+    def _all_strings(self, prefix: str = "", strings: list = None) -> list:
         """
         all_strings recursively collects all complete words that exist in the tree.
         It builds words by traversing the tree nodes while maintaining a prefix.
@@ -80,27 +80,28 @@ class TSTreeNode:
         """
         if strings is None:
             strings = []
+
         # Add current character to prefix
-            current_prefix = prefix + self._char
+        current_prefix = prefix + self._char
 
-            # If this is the end of a word, add it to results
-            if self._is_end:
-                strings.append(current_prefix)
+        # If this is the end of a word, add it to results
+        if self._is_end:
+            strings.append(current_prefix)
 
-            # Continue search in left child (same prefix)
-            if self._lt is not None:
-                self._lt._all_strings(prefix, strings)
+        # Continue search in left child (same prefix)
+        if self._lt is not None:
+            self._lt._all_strings(prefix, strings)
 
-            # Continue search in equal child (with updated prefix)
-            if self._eq is not None:
-                self._eq._all_strings(current_prefix, strings)
+        # Continue search in equal child (with updated prefix)
+        if self._eq is not None:
+            self._eq._all_strings(current_prefix, strings)
 
-            # Continue search in right child (same prefix)
-            if self._gt is not None:
-                self._gt._all_strings(prefix, strings)
-            return strings
+        # Continue search in right child (same prefix)
+        if self._gt is not None:
+            self._gt._all_strings(prefix, strings)
+        return strings
 
-    def  __len__(self) -> int:
+    def __len__(self) -> int:
         """
         Get the total number of nodes in the subtree rooted at this node.
 
@@ -139,13 +140,14 @@ class TSTreeNode:
             repr_string += "\n" + self._gt._to_string(indent + "  ", "> ")
 
         return repr_string
-    
+
     def __repr__(self) -> str:
         """
         Get the string representation of the node.
         :return: The string representation of the node.
         """
         return self._char
+
 
 class TSTree:
     """A ternary search tree."""
@@ -160,10 +162,13 @@ class TSTree:
         Insert a string into the tree.
         :param string: The string to insert.
         """
+        if not string:
+            return
+
         if self._root is None:
             self._root = TSTreeNode(string[0])
         self._root._insert(string)
-        
+
     def search(self, string: str) -> bool:
         """
         Search for a string in the tree.
@@ -173,3 +178,30 @@ class TSTree:
         if self._root is None:
             return False
         return self._root._search(string)
+
+    def all_strings(self) -> list:
+        """
+        Collect all strings in the tree.
+        :return: List of all strings in the tree.
+        """
+        if self._root is None:
+            return []
+        return self._root._all_strings()
+
+    def __len__(self) -> int:
+        """
+        Get the length of the tree.
+        :return: The length of the tree.
+        """
+        if self._root is None:
+            return 0
+        return len(self._root)
+
+    def __repr__(self) -> str:
+        """
+        Get the string representation of the tree.
+        :return: The string representation of the tree.
+        """
+        if self._root is None:
+            return "Empty tree"
+        return self._root._to_string("", label="")
