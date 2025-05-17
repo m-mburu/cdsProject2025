@@ -5,11 +5,11 @@ import random
 import string
 import time
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
+from collections import defaultdict
 from typing import List, Literal
 
 Case = Literal["average", "best", "worst"]
+
 
 def _random_word(length: int) -> str:
     """Generate a random word of given length.
@@ -17,6 +17,7 @@ def _random_word(length: int) -> str:
     :return: Random word
     """
     return ''.join(random.choices(string.ascii_lowercase, k=length))
+
 
 def _median_order(seq: List[str]) -> List[str]:
     """
@@ -29,6 +30,7 @@ def _median_order(seq: List[str]) -> List[str]:
         return []
     mid = len(seq) // 2
     return [seq[mid]] + _median_order(seq[:mid]) + _median_order(seq[mid+1:])
+
 
 def generate_words(n: int,
                    k: int | None = None,
@@ -65,6 +67,7 @@ def generate_words(n: int,
         return _median_order(words)        
 
     raise ValueError(f"Unknown case: {case!r}")
+
 
 def get_ram_usage_mb():
     """
@@ -120,60 +123,60 @@ def benchmark_tree(TreeClass, words, repeat=50):
     return avg_insert, avg_search, avg_memory
 
 
-def run_comparison(sizes, repeat=3):
-    results = {
-        "size": [],
-        "tst_insert": [],
-        "tst_search": [],
-        "tst_ram": [],
-        "bst_insert": [],
-        "bst_search": [],
-        "bst_ram": []
-    }
+def run_comparison(
+        sizes: list[int],
+        tree_specs: list[tuple[str, type]],
+        repeat: int = 3,
+        case: str = "average",
+        *,
+        verbose: bool = True
+) -> pd.DataFrame:
+    """
+    Benchmark multiple tree classes on the same word lists.
 
+    Parameters
+    ----------
+    sizes      : list of word-set sizes to test
+    tree_specs : list of (label, TreeClass) tuples, e.g.
+                 [("tst", TSTree), ("bst", Btree)]
+    repeat     : repetitions passed straight to `benchmark_tree`
+    case       : "average" | "best" | "worst"
+    verbose    : print progress if True
+
+    Returns
+    -------
+    pd.DataFrame in wide format — one row per `size`,
+    columns "<label>_<metric>" for metric in {insert, search, ram}.
+    """
+    # build an empty dict-of-lists with dynamic keys ---------------
+    results = defaultdict(list)
+    results["size"] = []           # always present
+
+    for label, _ in tree_specs:
+        for metric in ("insert", "search", "ram"):
+            results[f"{label}_{metric}"] = []
+
+    # --------------------------------------------------------------
     for size in sizes:
-        words = generate_words(size)
-        print(f"\nBenchmarking {size} words...")
+        words = generate_words(size, case=case)
 
-        t_ins, t_srch, t_ram = benchmark_tree(TSTree, words, repeat)
-        b_ins, b_srch, b_ram = benchmark_tree(Btree, words, repeat)
+        if verbose:
+            print(f"\nBenchmarking {size} words ({case} case)…")
+
+        row_metrics = {}           # temporary store for pretty printing
+
+        for label, TreeClass in tree_specs:
+            ins, srch, ram = benchmark_tree(TreeClass, words, repeat)
+            results[f"{label}_insert"].append(ins)
+            results[f"{label}_search"].append(srch)
+            results[f"{label}_ram"].append(ram)
+
+            row_metrics[label] = (ins, srch, ram)
 
         results["size"].append(size)
-        results["tst_insert"].append(t_ins)
-        results["tst_search"].append(t_srch)
-        results["tst_ram"].append(t_ram)
-        results["bst_insert"].append(b_ins)
-        results["bst_search"].append(b_srch)
-        results["bst_ram"].append(b_ram)
 
-        print(f"TSTree  | Insert: {t_ins:.4f}s | Search: {t_srch:.4f}s | RAM: {t_ram:.2f} MB")
-        print(f"Btree   | Insert: {b_ins:.4f}s | Search: {b_srch:.4f}s | RAM: {b_ram:.2f} MB")
+        if verbose:
+            for label, (ins, srch, ram) in row_metrics.items():
+                print(f"{label:<8}| ins {ins:.4f}s | srch {srch:.4f}s | ram {ram:.2f} MB")
 
-    return results
-
-
-def plot_facet_metrics(df):
-
-    # Melt the DataFrame
-    df_melted = df.melt(
-        id_vars="size",
-        value_vars=["tst_insert", "tst_search", "tst_ram", "bst_insert", "bst_search", "bst_ram"],
-        var_name="metric", value_name="value"
-    )
-
-    # Extract 'tree' and 'test_type', then drop 'metric'
-    df_melted[["tree", "test_type"]] = df_melted["metric"].str.extract(r'^(tst|bst)_(.*)$')
-    df_melted = df_melted.drop(columns=["metric"])
-
-    # Plot using Seaborn FacetGrid (relplot)
-    g = sns.relplot(
-        data=df_melted,
-        x="size", y="value",
-        col="test_type", hue="tree", kind="line",
-        facet_kws={'sharey': False, 'sharex': True},
-        height=4, aspect=1.2
-    )
-    g.set_titles("{col_name}")
-    g.set_axis_labels("Number of Words", "Value")
-    g.fig.suptitle("TSTree vs Btree: Performance Metrics", y=1.05)
-    plt.show()
+    return pd.DataFrame(results)
