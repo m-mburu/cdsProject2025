@@ -3,11 +3,11 @@ import os
 import pandas as pd
 import sys
 
-#from Assignments.assignment1 import dna_match, collect_email_from_text
 from src.tstree.tstree import TSTree
 from src.btree.btree import Btree
 from src.benchmark.benchmark import run_comparison
 from typing import List
+
 
 def run_cron_comparison(person_name, sizes, repeat):
     """
@@ -33,7 +33,6 @@ def run_cron_comparison(person_name, sizes, repeat):
     df.to_csv(filename, index=True)
     print(f"Saved results to {filename}")
     print(df)
-
 
 
 def generate_sizes(hpc: bool = False,
