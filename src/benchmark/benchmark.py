@@ -5,17 +5,27 @@ import random
 import string
 import time
 
-def generate_words(n, k= None):
+
+def generate_words(n: int, k: int = None) -> list[str]:
     """
-    Generate a list of n random words.
-    Each word is a random string of lowercase letters with a length between 2 and 20.
-    :param n: Number of words to generate
-    :return: List of random words
+    Generate a list of n random words consisting of lowercase letters.
+
+    Parameters:
+        n (int): Number of words to generate.
+        k (int, optional): If specified, all words will be of fixed length k.
+                           If None, each word will have a random length between 2 and 20.
+
+    Returns:
+        list[str]: A list of randomly generated words.
     """
-    # Generate n random words
-    if k is None:
-        k = random.randint(2, 20)
-    return [''.join(random.choices(string.ascii_lowercase, k= k)) for _ in range(n)]
+    words = []
+
+    for _ in range(n):
+        word_length = k if k is not None else random.randint(2, 20)
+        word = ''.join(random.choices(string.ascii_lowercase, k=word_length))
+        words.append(word)
+
+    return words
 
 
 def get_ram_usage_mb():
@@ -25,7 +35,8 @@ def get_ram_usage_mb():
     """
     process = psutil.Process(os.getpid())
     mem = process.memory_info().rss / 1e6  # MB
-    return  mem
+    return mem
+
 
 def benchmark_tree(TreeClass, words, repeat=50):
     """
