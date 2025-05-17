@@ -7,29 +7,64 @@ import time
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+from typing import List, Literal
 
+Case = Literal["average", "best", "worst"]
 
-def generate_words(n: int, k: int = None) -> list[str]:
+def _random_word(length: int) -> str:
+    """Generate a random word of given length.
+    :param length: Length of the word
+    :return: Random word
     """
-    Generate a list of n random words consisting of lowercase letters.
+    return ''.join(random.choices(string.ascii_lowercase, k=length))
 
-    Parameters:
-        n (int): Number of words to generate.
-        k (int, optional): If specified, all words will be of fixed length k.
-                           If None, each word will have a random length between 2 and 20.
-
-    Returns:
-        list[str]: A list of randomly generated words.
+def _median_order(seq: List[str]) -> List[str]:
     """
-    words = []
+    Generate a median order of the sequence for balanced insertion.
+    :param seq: List of strings
+    :return: Median ordered list
+    """
 
-    for _ in range(n):
-        word_length = k if k is not None else random.randint(2, 20)
-        word = ''.join(random.choices(string.ascii_lowercase, k=word_length))
-        words.append(word)
+    if not seq:
+        return []
+    mid = len(seq) // 2
+    return [seq[mid]] + _median_order(seq[:mid]) + _median_order(seq[mid+1:])
 
-    return words
+def generate_words(n: int,
+                   k: int | None = None,
+                   case: Case = "average",
+                   seed: int | None = None) -> List[str]:
+    """
+    Generate a list of random words for benchmarking.
+    :param n: Number of words to generate
+    :param k: Length of each word (if None, random length between 2 and 20)
+    :param case: Type of order for the words
+    :param seed: Random seed for reproducibility
+    :return: List of generated words
+    """
+    if seed is not None:
+        random.seed(seed)
 
+    #  generate unique words
+    word_len = k if k is not None else None
+    pool = set()
+    while len(pool) < n:
+        pool.add(_random_word(word_len or random.randint(2, 20)))
+    words = sorted(pool)                    
+
+    # requested cases
+    # average cases
+    if case == "average":
+        random.shuffle(words)               
+        return words
+
+    if case == "worst":
+        return words                     
+    # best case; median ordered ordered
+    if case == "best":
+        return _median_order(words)        
+
+    raise ValueError(f"Unknown case: {case!r}")
 
 def get_ram_usage_mb():
     """
