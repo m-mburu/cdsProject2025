@@ -1,8 +1,8 @@
 
 from main import run_cron_comparison, generate_sizes
 
-sizes =generate_sizes(hpc=False)
-repeat = 10
+sizes =generate_sizes(hpc=True)
+repeat = 3
 person_name = "Moses"
 if __name__ == "__main__":
     run_cron_comparison(person_name, sizes, repeat)
