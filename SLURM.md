@@ -27,8 +27,6 @@ A `.slurm` file is a bash script with SLURM directives that tell HPC scheduler h
 
 * `cd` to the project directory.
 
-* Step 1: Create the SLURM Job Script
-
 * Create a new .slurm file in your project folder (e.g. *run_benchmark.slurm*). Add the following structure and customize it as needed:
 
 ```bash
