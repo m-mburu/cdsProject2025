@@ -11,66 +11,188 @@ Search Tree (TST) and a B-tree. Below are the key files and directories:
 
 ### Core Modules
 
-- [`main.py`](./main.py)  
-  Main script that imports the TST and B-tree modules, runs benchmarks,
-  and coordinates the comparison.
+- [`main.py`](./main.py)
 
-- [`requirements.txt`](./requirements.txt)  
-  Lists Python packages needed to run the project (e.g. `pandas`,
-  `psutil`).
+  This script benchmarks two tree-based data structures—TSTree (Ternary
+  Search Tree) and Btree (Binary Search Tree)—across varying dataset
+  sizes and input scenarios (best, worst, and average cases). Designed
+  for both local and HPC (High-Performance Computing) environments, it
+  automatically generates benchmark datasets, executes performance
+  comparisons, and saves the aggregated results as a CSV file in the
+  `data/ directory`. Users can run the script via the command line with
+  options to specify the compute environment and an optional name to
+  personalize the output file. The benchmarking process is repeated
+  multiple times to ensure result reliability, and supports
+  extensibility for evaluating additional tree types.
 
-- [`src/tstree/tstree.py`](./src/tstree/tstree.py)  
-  Ternary Search Tree implementation (`TSTree` class).
+- [`requirements.txt`](./requirements.txt)
 
-- [`src/btree/btree.py`](./src/btree/btree.py)  
-  Simple B-tree implementation (`Btree` class).
+  This project relies on a small set of Python packages to support
+  benchmarking, data processing, and system monitoring. The core
+  dependencies include `pandas` for tabular data manipulation and
+  storage, and `psutil` for tracking memory usage during performance
+  tests. These packages are listed in the `requirements.txt` file to
+  ensure consistent environment setup across systems, especially on HPC
+  clusters where isolated virtual environments are used. After
+  activating your environment, install the required packages with
+  `pip install -r requirements.txt`.
 
-- [`src/benchmark/benchmark.py`](./src/benchmark/benchmark.py)  
-  Contains the `run_comparison` function used to benchmark tree
-  performance.
+- [`src/tstree/tstree.py`](./src/tstree/tstree.py)
 
-### Run Scripts
+  The `TSTree` class implements a Ternary Search Tree (TST)—a hybrid
+  data structure combining characteristics of binary search trees and
+  tries. Each node stores a single character and can have three
+  children: left (`_lt`) for lexicographically smaller characters, right
+  (`_gt`) for larger ones, and middle (`_eq`) for progressing through
+  characters in a string. This design allows for efficient space usage
+  while maintaining prefix-aware operations. The tree supports insertion
+  (`insert`), exact string lookup (`search`), and full enumeration of
+  stored strings (`all_strings`). It also includes a richly formatted
+  string representation for visualizing structure, and internal logic to
+  simulate performance extremes in benchmarks (e.g., deep chains or
+  heavy branching). This TST implementation serves as a more
+  sophisticated counterpart to a basic BST in comparative benchmarking.
 
-- [`kerubo_run.py`](./kerubo_run.py)  
-  Runs a specific configuration of the benchmark (e.g. for Kerubo).
+- [`src/btree/btree.py`](./src/btree/btree.py)
 
-- [`mburu_run.py`](./mburu_run.py)  
-  Runs a different configuration or user-specific test run.
+  The `Btree` class implements a simple unbalanced binary search tree
+  (BST) used for benchmarking against more advanced structures like
+  ternary search trees (TSTrees). Each `BtreeNode` stores a single
+  string and has at most two children—left for lexicographically smaller
+  strings and right for larger ones. The tree supports basic operations:
+  insert, search, retrieval of all stored strings (`all_strings`), and
+  structural introspection via `__repr__`. This minimal BST is
+  intentionally kept naive to highlight performance contrasts under
+  varying word insertion orders (e.g., degenerate chains in worst-case
+  scenarios). It serves as a baseline in performance tests, especially
+  useful for educational or comparative purposes in algorithm and data
+  structure studies.
+
+- [`src/benchmark/benchmark.py`](./src/benchmark/benchmark.py)
+
+  This benchmarking module is the core engine for evaluating the
+  performance of tree-based data structures like TSTree and Btree. It
+  generates word datasets tailored to simulate average, best, and worst
+  case scenarios for insertion and search operations. The script
+  measures execution time and memory usage across repeated trials to
+  ensure statistical reliability. Best-case scenarios are designed to
+  favor TSTrees (e.g., long shared prefixes), while worst-case scenarios
+  stress them with degenerate insertion patterns. The output is a
+  comprehensive DataFrame summarizing average insert time, search time,
+  and RAM consumption for each structure and dataset size. This script
+  is HPC-compatible and designed for integration into automated
+  performance testing pipelines.
 
 ### Data Files
 
 - [`data/df_anita.csv`](./data/df_anita.csv)  
+
 - [`data/df_mburu.csv`](./data/df_mburu.csv)  
-- [`data/df_moses.csv`](./data/df_moses.csv)  
-  Input datasets used during testing or benchmarking.
+
+- [`data/df_moses.csv`](./data/df_moses.csv)
+
+  The `data/` directory contains CSV files generated during benchmarking
+  runs. Each file corresponds to a specific experiment conducted by an
+  individual contributor. For instance, `df_anita.csv` and
+  `df_mburu.csv` capture the results of performance tests across various
+  input sizes and cases (average, best, and worst) for both `TSTree` and
+  `Btree` data structures. These datasets include key metrics such as
+  insertion time, search time, and memory usage, and serve both as a
+  performance baseline and as reproducible artifacts for further
+  analysis.
 
 ### Documentation
 
-- [`README.md`](./README.md)  
-  This file.
+- [`README.md`](./README.md)
 
-- [`HPC_setup.md`](./HPC_setup.md)  
-  Instructions for setting up the environment and running on the HPC.
+  The `README.md` file serves as the main documentation for this
+  project. It provides detailed setup instructions, usage guidelines,
+  benchmarking methodology, and explanations of key components such as
+  tree structures, dataset generation, and SLURM job submission on HPC
+  systems. This file is intended to help both contributors and users
+  understand, install, and run the project efficiently.
+
+- [`HPC_setup.md`](./HPC_setup.md)
+
+  We detail the process of setting up the environment and running on the
+  HPC. Start by loading the appropriate Python module using module load
+  `Python/3.12.3-GCCcore-13.3.0`. Confirm the interpreter is correctly
+  set up by checking the path with which python and verifying the
+  version using `python --version`. Once confirmed, navigate to your
+  project directory (e.g., `~/cdsProject2025`) and set up a virtual
+  environment by running `python -m venv .venv`. Activate this
+  environment with `source .venv/bin/activate` every time you start a
+  new session. After activation, install dependencies from the
+  requirements.txt file using `pip install -r requirements.txt`.
+  Finally, execute your benchmarking script using `main.py`.
 
 - [`SLURM.md`](./SLURM.md)  
-  Contains SLURM job submission guidance.
+  To run benchmarking scripts efficiently on a high-performance
+  computing (HPC) system, users should prepare a SLURM job script that
+  defines the job name, wall time, CPU and memory allocation, email
+  notifications, and partition/cluster selection. The job script should
+  load the appropriate module environment (e.g., Python 3.12.3 via
+  GCCcore 13.3.0), activate a Python virtual environment, and execute
+  the main Python script. Users must ensure the `logs/` directory exists
+  for output and error files, and must replace placeholders with valid
+  account, cluster, and email values. After writing the SLURM file
+  (e.g., `run_benchmark.slurm`), submit it using `sbatch`, monitor it
+  with `squeue` or `sacct`, and debug issues with guidance from typical
+  error patterns. This setup ensures reproducible and scalable execution
+  of experiments in batch-mode on VSC-managed clusters like Genius or
+  WICE.
 
-- [`docs/project_2024_2025.docx`](./docs/project_2024_2025.docx)  
-  Main project report.
+- [`docs/project_2024_2025.docx`](./docs/project_2024_2025.docx)
+
+  The `docs/project_2024_2025.docx` file contains the main written
+  report for the project. It documents the problem statement, design
+  decisions, benchmarking methodology, performance analysis, and final
+  conclusions. This report serves as the official deliverable for the
+  2024–2025 project cycle and complements the codebase by providing
+  theoretical context and critical evaluation of the results.
 
 ### Testing & Experiments
 
-- [`src/tstree/test_tstree.py`](./src/tstree/test_tstree.py)  
-  Unit tests for the TSTree.
+- [`src/tstree/test_tstree.py`](./src/tstree/test_tstree.py)
 
-- [`test_py.py`](./test_py.py)  
-  Additional or experimental testing script.
+  The `src/tstree/test_tstree.py` file contains unit tests for the
+  `TSTree` class, ensuring correct behavior for core operations such as
+  insertion, search, and word enumeration. These tests are designed to
+  validate the tree’s functionality across a range of cases.
 
-- [`test.ipynb`](./test.ipynb)  
-  Jupyter notebook for interactive testing and visualization.
+- [`test_py.py`](./test_py.py)
 
-- [`tests/plot_functions.py`](./tests/plot_functions.py)  
-  Plotting utilities for benchmark visualization.
+  The `test_py.py` script is a standalone test utility focused on
+  validating sorting behavior in lists. It defines a helper function
+  `is_sorted()` that checks whether a list is in ascending order, then
+  applies it to sample datasets under best- and worst-case scenarios.
+  This script is primarily intended for quick debugging and exploratory
+  testing of list behavior.
+
+- [`test.ipynb`](./test.ipynb)
+
+  The `test.ipynb` notebook is used for interactive testing and
+  visualization of utility functions relevant to data validation. It
+  includes basic helper functions such as `is_sorted()`, which checks
+  whether a list is in ascending order, and `have_same_elements()`,
+  which compares the contents of two lists regardless of order. The
+  notebook contains test cases for both functions, including edge cases,
+  and is useful for quick experimentation and debugging in a Jupyter
+  environment. Although plotting libraries like `matplotlib` and `numpy`
+  are commented out, the notebook is structured to support future
+  visualization and performance testing.
+
+- [`tests/plot_functions.py`](./tests/plot_functions.py)
+
+  The `tests/plot_functions.py` script provides a flexible plotting
+  utility for visualizing benchmarking results stored in CSV format. It
+  defines the `plot_facet_metrics()` function, which uses `Seaborn` and
+  `Matplotlib` to create facet grid line plots of various performance
+  metrics (e.g., insert time, search time, memory usage) across
+  different dataset sizes and test scenarios. The function automatically
+  reshapes the DataFrame, extracts labels from metric names (e.g.,
+  distinguishing `tst_insert` vs. `bst_search`), and renders one subplot
+  per metric type.
 
 ------------------------------------------------------------------------
 
