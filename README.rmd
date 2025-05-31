@@ -9,5 +9,77 @@ Students:
 - **Moses Mburu [2469245]** 
 - **Anita Kerubo [2469491]** 
 
-Implementation of a Ternary Search Tree (TST) in Python, focusing on clear, efficient, and benchmarked code. This repository tracks our collaborative development, testing, and performance analysis using HPC infrastructure.
+## Project Structure
 
+This project implements a benchmarking framework for comparing a Ternary Search Tree (TST) and a B-tree. Below are the key files and directories:
+
+### Core Modules
+
+- [`main.py`](./main.py)  
+  Main script that imports the TST and B-tree modules, runs benchmarks, and coordinates the comparison.
+
+- [`requirements.txt`](./requirements.txt)  
+  Lists Python packages needed to run the project (e.g. `pandas`, `psutil`).
+
+- [`src/tstree/tstree.py`](./src/tstree/tstree.py)  
+  Ternary Search Tree implementation (`TSTree` class).
+
+- [`src/btree/btree.py`](./src/btree/btree.py)  
+  Simple B-tree implementation (`Btree` class).
+
+- [`src/benchmark/benchmark.py`](./src/benchmark/benchmark.py)  
+  Contains the `run_comparison` function used to benchmark tree performance.
+
+### Run Scripts
+
+- [`kerubo_run.py`](./kerubo_run.py)  
+  Runs a specific configuration of the benchmark (e.g. for Kerubo).
+
+- [`mburu_run.py`](./mburu_run.py)  
+  Runs a different configuration or user-specific test run.
+
+### Data Files
+
+- [`data/df_anita.csv`](./data/df_anita.csv)  
+- [`data/df_mburu.csv`](./data/df_mburu.csv)  
+- [`data/df_moses.csv`](./data/df_moses.csv)  
+  Input datasets used during testing or benchmarking.
+
+### Documentation
+
+- [`README.md`](./README.md)  
+  This file.
+
+- [`HPC_setup.md`](./HPC_setup.md)  
+  Instructions for setting up the environment and running on the HPC.
+
+- [`SLURM.md`](./SLURM.md)  
+  Contains SLURM job submission guidance.
+
+- [`docs/project_2024_2025.docx`](./docs/project_2024_2025.docx)  
+  Main project report.
+
+### Testing & Experiments
+
+- [`src/tstree/test_tstree.py`](./src/tstree/test_tstree.py)  
+  Unit tests for the TSTree.
+
+- [`test_py.py`](./test_py.py)  
+  Additional or experimental testing script.
+
+- [`test.ipynb`](./test.ipynb)  
+  Jupyter notebook for interactive testing and visualization.
+
+- [`tests/plot_functions.py`](./tests/plot_functions.py)  
+  Plotting utilities for benchmark visualization.
+
+---
+
+You can run any of the benchmark scripts using:
+
+```bash
+python main.py <True|False> [person_name]
+````
+
+
+[Top coder tst trees](https://www.topcoder.com/thrive/articles/ternary-search-trees#:~:text=Ternary%20search%20trees%20are%20a,consumes%20a%20lot%20of%20memory)
