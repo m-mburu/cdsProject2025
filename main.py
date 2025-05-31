@@ -71,10 +71,11 @@ def generate_sizes(hpc: bool = False,
 
 
 if __name__ == "__main__":
-    # Read command-line arguments: sys.argv[1] and sys.argv[2] (optional)
+
+    # Read command-line arguments: sys.argv[1], sys.argv[2] (optional), and sys.argv[3] (optional)
     args = sys.argv[1:]
-    if len(args) == 0:
-        print("Usage: python main.py <True|False> [person_name]")
+    if len(args) < 1:
+        print("Usage: python main.py <True|False> [person_name] [repeat]")
         sys.exit(1)
 
     # 1st argument: must be "True" or "False"
@@ -87,13 +88,25 @@ if __name__ == "__main__":
         print("Error: first argument must be True or False.")
         sys.exit(1)
 
-    # 2nd argumentperson_name
+    # 2nd argument: person_name (optional)
     persona = args[1] if len(args) > 1 else None
+
+    # 3rd argument: repeat (optional, default = 2)
+    if len(args) > 2:
+        try:
+            repeat = int(args[2])
+            if repeat < 1:
+                raise ValueError
+        except ValueError:
+            print("Error: third argument [repeat] must be a positive integer.")
+            sys.exit(1)
+    else:
+        repeat = 3
 
     # Generate sizes based on whether we're on HPC
     sizes = generate_sizes(hpc=on_hpc_flag)
-    # Set the number of repetitions for the benchmark
-    repeat = 1 
+
     # Run the comparison
     run_cron_comparison(persona, sizes, repeat)
     print("Finished run_cron_comparison() and saved results.")
+

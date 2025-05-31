@@ -8,7 +8,7 @@ def plot_facet_metrics(
         df,
         id_vars=("size", "case"),
         facet_col="test_type",
-        facet_row=None, 
+        facet_row="case", 
         hue="tree",
         metric_pattern=None
 ):

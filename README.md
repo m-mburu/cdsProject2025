@@ -249,7 +249,7 @@ for name, df in data_frames.items():
         print(f"DataFrame {clean_name} lacks required 'size' column")
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-2-1.png" width="990" />
+<img src="README_files/figure-gfm/unnamed-chunk-2-1.png" width="1451" />
 
 [Top coder tst
 trees](https://www.topcoder.com/thrive/articles/ternary-search-trees#:~:text=Ternary%20search%20trees%20are%20a,consumes%20a%20lot%20of%20memory)
