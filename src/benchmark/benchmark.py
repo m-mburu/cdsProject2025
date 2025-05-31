@@ -12,61 +12,74 @@ Case = Literal["average", "best", "worst"]
 
 
 def _random_word(length: int) -> str:
-    """Generate a random word of given length.
-    :param length: Length of the word
-    :return: Random word
+    """Return one random lowercase word of the given length."""
+    return "".join(random.choices(string.ascii_lowercase, k=length))
+
+
+def _tst_worst_chain(n: int) -> List[str]:
     """
-    return ''.join(random.choices(string.ascii_lowercase, k=length))
+    Worst-case for a TST: each word is the previous word plus one 'a'.
+      n=5  ->  ['a', 'aa', 'aaa', 'aaaa', 'aaaaa']
+    The tree becomes a single '=' chain of depth ≈ n.
+    """
+    return ["a" * i for i in range(1, n + 1)]
+print("Worst-case TST chain generated:", _tst_worst_chain(5))
+
+def _tst_best_common_prefix(n: int,
+                            prefix: str = "app",
+                            suffix_len: int = 4) -> List[str]:
+    """
+    Best-case for a TST: many strings share a *long common prefix*.
+    Every word is  <prefix> + random suffix.
+    Example (prefix='app', n=4) ->  ['appxq', 'appdo', 'appgh', 'appjb']
+    The TST follows '=' links for the shared prefix, then branches.
+    """
+    seen = set()
+    while len(seen) < n:
+        suffix = _random_word(suffix_len)
+        seen.add(prefix + suffix)
+    return list(seen)
 
 
 def _median_order(seq: List[str]) -> List[str]:
-    """
-    Generate a median order of the sequence for balanced insertion.
-    :param seq: List of strings
-    :return: Median ordered list
-    """
-
+    """Return the list reordered in median-first order (keeps BST/TST balanced)."""
     if not seq:
         return []
     mid = len(seq) // 2
-    return [seq[mid]] + _median_order(seq[:mid]) + _median_order(seq[mid+1:])
+    return [seq[mid]] + _median_order(seq[:mid]) + _median_order(seq[mid + 1:])
 
 
 def generate_words(n: int,
+                   *,
                    k: int | None = None,
                    case: Case = "average",
                    seed: int | None = None) -> List[str]:
     """
-    Generate a list of random words for benchmarking.
-    :param n: Number of words to generate
-    :param k: Length of each word (if None, random length between 2 and 20)
-    :param case: Type of order for the words
-    :param seed: Random seed for reproducibility
-    :return: List of generated words
+    Produce a list of *unique* words tailored to the chosen case.
+
+    - average : fully random words of length k (or 2–20 if k is None), shuffled.
+    - best    : words that all share a long common prefix (good for TST).
+    - worst   : 'a', 'aa', 'aaa', … — forces a degenerate '=' chain.
     """
     if seed is not None:
         random.seed(seed)
 
-    #  generate unique words
-    word_len = k if k is not None else None
+    if case == "worst":
+        return _tst_worst_chain(n)
+
+    if case == "best":
+        
+        words = _tst_best_common_prefix(n, prefix="app", suffix_len=4)
+        return _median_order(sorted(words))
+
+    # 
+    word_len = k if k is not None else random.randint(2, 20)
     pool = set()
     while len(pool) < n:
-        pool.add(_random_word(word_len or random.randint(2, 20)))
-    words = sorted(pool)                    
-
-    # requested cases
-    # average cases
-    if case == "average":
-        random.shuffle(words)               
-        return words
-
-    if case == "worst":
-        return words                     
-    # best case; median ordered ordered
-    if case == "best":
-        return _median_order(words)        
-
-    raise ValueError(f"Unknown case: {case!r}")
+        pool.add(_random_word(word_len))
+    words = list(pool)
+    random.shuffle(words)
+    return words
 
 
 def get_ram_usage_mb():
