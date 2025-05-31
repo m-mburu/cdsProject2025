@@ -112,7 +112,7 @@ Search Tree (TST) and a B-tree. Below are the key files and directories:
   systems. This file is intended to help both contributors and users
   understand, install, and run the project efficiently.
 
-- [`HPC_setup.md`](./HPC_setup.md)
+- [`HPC_setup.md`](./tutorials/HPC_setup.md)
 
   We detail the process of setting up the environment and running on the
   HPC. Start by loading the appropriate Python module using module load
@@ -126,7 +126,7 @@ Search Tree (TST) and a B-tree. Below are the key files and directories:
   requirements.txt file using `pip install -r requirements.txt`.
   Finally, execute your benchmarking script using `main.py`.
 
-- [`SLURM.md`](./SLURM.md)  
+- [`SLURM.md`](./tutorials/SLURM.md)  
   To run benchmarking scripts efficiently on a high-performance
   computing (HPC) system, users should prepare a SLURM job script that
   defines the job name, wall time, CPU and memory allocation, email
@@ -194,13 +194,62 @@ Search Tree (TST) and a B-tree. Below are the key files and directories:
   distinguishing `tst_insert` vs. `bst_search`), and renders one subplot
   per metric type.
 
-------------------------------------------------------------------------
-
 You can run any of the benchmark scripts using:
 
 ``` bash
 python main.py <True|False> [person_name]
 ```
+
+``` python
+import pandas as pd
+## load all the data in a for loop from data/ 
+import os
+data_dir = "data/"
+files = [f for f in os.listdir(data_dir) if f.endswith('.csv')]
+data_frames = {}
+for file in files:
+    file_path = os.path.join(data_dir, file)
+    print(f"Loading {file_path}")
+    df = pd.read_csv(file_path)
+    data_frames[file] = df
+```
+
+    ## Loading data/df_moses.csv
+
+``` python
+## print the names of the data frames
+# print("Data frames loaded:")
+# for name in data_frames.keys():
+#     print(name)
+```
+
+``` python
+from tests.plot_functions import plot_facet_metrics
+import matplotlib.pyplot as plt
+
+for name, df in data_frames.items():
+    clean_name = os.path.splitext(name)[0]
+    print(f"Plotting metrics for {clean_name}")
+    
+    # First, check if required columns exist
+    if 'size' in df.columns:
+        # If 'case' column doesn't exist, try to add it using the filename
+        if 'case' not in df.columns:
+            df['case'] = clean_name  # Add file identifier as 'case'
+            
+        try:
+            # Use default id_vars
+            g = plot_facet_metrics(df)
+            plt.suptitle(f"Metrics for {clean_name}")
+            plt.tight_layout()
+            plt.show()  # Force display of current plot before creating next one
+        except Exception as e:
+            print(f"Error plotting {clean_name}: {e}")
+    else:
+        print(f"DataFrame {clean_name} lacks required 'size' column")
+```
+
+<img src="README_files/figure-gfm/unnamed-chunk-2-1.png" width="990" />
 
 [Top coder tst
 trees](https://www.topcoder.com/thrive/articles/ternary-search-trees#:~:text=Ternary%20search%20trees%20are%20a,consumes%20a%20lot%20of%20memory)

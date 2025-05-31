@@ -1,7 +1,7 @@
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-
+import re
 
 
 def plot_facet_metrics(
@@ -109,7 +109,9 @@ def plot_facet_metrics(
         kind="line", 
         errorbar=None,
         facet_kws={"sharey": False, "sharex": True},
-        height=4, aspect=1.2
+        col_wrap=2 if facet_row is None else None,
+        height=4, 
+        aspect=1.2
     )
     g.set_axis_labels("Number of Words", "Value (s / MB)")
     
