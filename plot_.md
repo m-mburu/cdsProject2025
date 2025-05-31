@@ -1,0 +1,55 @@
+Untitled
+================
+
+``` python
+import pandas as pd
+## load all the data in a for loop from data/ 
+import os
+data_dir = "data/"
+files = [f for f in os.listdir(data_dir) if f.endswith('.csv')]
+data_frames = {}
+for file in files:
+    file_path = os.path.join(data_dir, file)
+    print(f"Loading {file_path}")
+    df = pd.read_csv(file_path)
+    data_frames[file] = df
+```
+
+    ## Loading data/df_moses.csv
+
+``` python
+## print the names of the data frames
+# print("Data frames loaded:")
+# for name in data_frames.keys():
+#     print(name)
+```
+
+``` python
+from tests.plot_functions import plot_facet_metrics
+import matplotlib.pyplot as plt
+
+for name, df in data_frames.items():
+    clean_name = os.path.splitext(name)[0]
+    print(f"Plotting metrics for {clean_name}")
+    
+    # First, check if required columns exist
+    if 'size' in df.columns:
+        # If 'case' column doesn't exist, try to add it using the filename
+        if 'case' not in df.columns:
+            df['case'] = clean_name  # Add file identifier as 'case'
+            
+        try:
+            # Use default id_vars
+            g = plot_facet_metrics(df)
+            plt.suptitle(f"Metrics for {clean_name}")
+            plt.tight_layout()
+            plt.show()  # Force display of current plot before creating next one
+        except Exception as e:
+            print(f"Error plotting {clean_name}: {e}")
+    else:
+        print(f"DataFrame {clean_name} lacks required 'size' column")
+```
+
+    ## Plotting metrics for df_moses
+    ## DataFrame columns: ['case', 'Unnamed: 1', 'size', 'tst_insert', 'tst_search', 'tst_ram', 'bst_insert', 'bst_search', 'bst_ram']
+    ## Error plotting df_moses: name 're' is not defined
