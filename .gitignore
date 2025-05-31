@@ -47,7 +47,7 @@ nosetests.xml
 coverage.xml
 *.cover
 *.py,cover
-.html
+
 # --------------------------------------------------------------------
 # pytest cache
 # --------------------------------------------------------------------
@@ -99,10 +99,9 @@ Thumbs.db
 
 # Output files from R CMD check
 /*.Rcheck/
-
-# RStudio files
 .Rproj.user/
-.Rproj
+*.Rproj
+*.html
 
 # produced vignettes
 vignettes/*.html
