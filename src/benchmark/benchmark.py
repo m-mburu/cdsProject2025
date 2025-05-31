@@ -6,10 +6,12 @@ import string
 import time
 import pandas as pd
 from collections import defaultdict
+import seaborn as sns
+import matplotlib.pyplot as plt
 from typing import List, Literal
 
-Case = Literal["average", "best", "worst"]
 
+Case = Literal["average", "best", "worst"]
 
 def _random_word(length: int) -> str:
     """Return one random lowercase word of the given length."""
@@ -176,7 +178,7 @@ def run_comparison(
         if verbose:
             print(f"\nBenchmarking {size} words ({case} case)…")
 
-        row_metrics = {}           # temporary store for pretty printing
+        row_metrics = {}         
 
         for label, TreeClass in tree_specs:
             ins, srch, ram = benchmark_tree(TreeClass, words, repeat)
@@ -193,3 +195,4 @@ def run_comparison(
                 print(f"{label:<8}| ins {ins:.4f}s | srch {srch:.4f}s | ram {ram:.2f} MB")
 
     return pd.DataFrame(results)
+

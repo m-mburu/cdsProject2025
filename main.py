@@ -57,8 +57,7 @@ def generate_sizes(hpc: bool = False,
         Defaults to 5_000_000 (5 M).
     """
     if not hpc:
-        return [5_000, 10_000, 50_000]
-
+        return [5_000, 10_000, 15_000]
     if max_n is None:
         max_n = 5_000_000
 
