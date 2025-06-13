@@ -1,12 +1,13 @@
 import random
 import os
-import pandas as pd
 import sys
+from typing import List, Optional
+import pandas as pd
 
 from src.tstree.tstree import TSTree
 from src.btree.btree import Btree
 from src.benchmark.benchmark import run_comparison
-from typing import List
+
 
 sys.setrecursionlimit(100_000)  
 def run_cron_comparison(person_name: str | None, sizes: List[int], repeat: int):
@@ -44,30 +45,44 @@ def run_cron_comparison(person_name: str | None, sizes: List[int], repeat: int):
     print(df)
 
 
+
+
+
 def generate_sizes(hpc: bool = False,
-                   max_n: int | None = None) -> List[int]:
+                   max_n: Optional[int] = None,
+                   step: Optional[int] = None) -> List[int]:
     """
     Return a list of dataset sizes for benchmarking.
 
-    :param hpc : bool, default False
-         False   sizes span 1e4 … 5e5  (quick local runs)  
-         True   sizes start at 1e6 and grow up to `max_n`
-    :param  max_n : int, optional
-        Only used when `hpc=True`.  Hard upper bound for the sequence.
-        Defaults to 5_000_000 (5 M).
+    Parameters
+    ----------
+    hpc   : bool, default False
+        False local run   (default max_n = 15_000)
+        True  HPC  run    (default max_n = 50_000)
+    max_n : int, optional
+        Upper bound (inclusive).  If None, picks 15k (local) or 50k (HPC).
+    step  : int, optional
+        Increment between successive sizes.  If None, it is chosen so that
+        roughly 10 points in the interval:  step = max_n // 10 
+
+    Returns
+    -------
+    List[int]
+        Sizes: list of integers from step to max_n, inclusive.
     """
-    if not hpc:
-        return [5_000, 10_000, 15_000]
+    # choose max_n  if not given
     if max_n is None:
-        max_n = 5_000_000
+        max_n = 50_000 if hpc else 5_000
 
-    sizes, n, factor = [], 1_000_000, 2.0
-    while n <= max_n:
-        sizes.append(n)
-        factor = 2.5 if factor == 2.0 else 2.0
-        n = int(n * factor)
+    # choose step  if not given
+    if step is None:
+        step = max_n // 10 or 1            
 
-    return sizes
+    if step <= 0:
+        raise ValueError("step must be a positive integer")
+
+    # generate sizes from step to max_n, inclusive
+    return list(range(step, max_n + 1, step))
 
 
 if __name__ == "__main__":
@@ -101,7 +116,7 @@ if __name__ == "__main__":
             print("Error: third argument [repeat] must be a positive integer.")
             sys.exit(1)
     else:
-        repeat = 3
+        repeat = 5
 
     # Generate sizes based on whether we're on HPC
     sizes = generate_sizes(hpc=on_hpc_flag)
