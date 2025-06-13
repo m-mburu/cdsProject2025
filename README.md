@@ -1,204 +1,276 @@
 Project Concepts of Data Science 2024-2025
 ================
-Moses Mburu, Anita Kerubo
 
-Students: - **Moses Mburu \[2469245\]** - **Anita Kerubo \[2469491\]**
+Students:
+
+- **Anita Kerubo \[2469491\]**
+- **Moses Mburu \[2469245\]**
 
 ## Project Structure
 
 This project implements a benchmarking framework for comparing a Ternary
 Search Tree (TST) and a B-tree. Below are the key files and directories:
 
-### Core Modules
+### Core Scripts
 
-- [`main.py`](./main.py)
+#### [`main.py`](./main.py)
 
-  This script benchmarks two tree-based data structures—TSTree (Ternary
-  Search Tree) and Btree (Binary Search Tree)—across varying dataset
-  sizes and input scenarios (best, worst, and average cases). Designed
-  for both local and HPC (High-Performance Computing) environments, it
-  automatically generates benchmark datasets, executes performance
-  comparisons, and saves the aggregated results as a CSV file in the
-  `data/ directory`. Users can run the script via the command line with
-  options to specify the compute environment and an optional name to
-  personalize the output file. The benchmarking process is repeated
-  multiple times to ensure result reliability, and supports
-  extensibility for evaluating additional tree types.
+This is the main script that runs all our experiments comparing two tree
+data structures:
 
-- [`requirements.txt`](./requirements.txt)
+- **TSTree** (Ternary Search Tree – the one we built)
+- **Btree** (Binary Search Tree – as explained in lectures)
 
-  This project relies on a small set of Python packages to support
-  benchmarking, data processing, and system monitoring. The core
-  dependencies include `pandas` for tabular data manipulation and
-  storage, and `psutil` for tracking memory usage during performance
-  tests. These packages are listed in the `requirements.txt` file to
-  ensure consistent environment setup across systems, especially on HPC
-  clusters where isolated virtual environments are used. After
-  activating your environment, install the required packages with
-  `pip install -r requirements.txt`.
+##### Steps the script performs:
 
-- [`src/tstree/tstree.py`](./src/tstree/tstree.py)
+1.  **Chooses dataset sizes** based on where you run the script:
 
-  The `TSTree` class implements a Ternary Search Tree (TST)—a hybrid
-  data structure combining characteristics of binary search trees and
-  tries. Each node stores a single character and can have three
-  children: left (`_lt`) for lexicographically smaller characters, right
-  (`_gt`) for larger ones, and middle (`_eq`) for progressing through
-  characters in a string. This design allows for efficient space usage
-  while maintaining prefix-aware operations. The tree supports insertion
-  (`insert`), exact string lookup (`search`), and full enumeration of
-  stored strings (`all_strings`). It also includes a richly formatted
-  string representation for visualizing structure, and internal logic to
-  simulate performance extremes in benchmarks (e.g., deep chains or
-  heavy branching). This TST implementation serves as a more
-  sophisticated counterpart to a basic BST in comparative benchmarking.
+    - If running locally: sizes go up to 15,000
+    - If running on an HPC system: sizes go up to 50,000
+    - The sizes are spaced out in 10 steps (like 5,000 → 10,000 → … →
+      50,000)
 
-- [`src/btree/btree.py`](./src/btree/btree.py)
+2.  **Runs benchmarks** on three types of test cases:
 
-  The `Btree` class implements a simple unbalanced binary search tree
-  (BST) used for benchmarking against more advanced structures like
-  ternary search trees (TSTrees). Each `BtreeNode` stores a single
-  string and has at most two children—left for lexicographically smaller
-  strings and right for larger ones. The tree supports basic operations:
-  insert, search, retrieval of all stored strings (`all_strings`), and
-  structural introspection via `__repr__`. This minimal BST is
-  intentionally kept naive to highlight performance contrasts under
-  varying word insertion orders (e.g., degenerate chains in worst-case
-  scenarios). It serves as a baseline in performance tests, especially
-  useful for educational or comparative purposes in algorithm and data
-  structure studies.
+    - Best case: words with shared prefixes (like “apple”, “apply”,
+      “app”)
+    - Average case: completely random words
+    - Worst case: progressive words (like “a”, “aa”, “aaa”, …)
 
-- [`src/benchmark/benchmark.py`](./src/benchmark/benchmark.py)
+3.  **Measures how long it takes** to insert and search using each tree
+    type for all cases and dataset sizes.
 
-  This benchmarking module is the core engine for evaluating the
-  performance of tree-based data structures like TSTree and Btree. It
-  generates word datasets tailored to simulate average, best, and worst
-  case scenarios for insertion and search operations. The script
-  measures execution time and memory usage across repeated trials to
-  ensure statistical reliability. Best-case scenarios are designed to
-  favor TSTrees (e.g., long shared prefixes), while worst-case scenarios
-  stress them with degenerate insertion patterns. The output is a
-  comprehensive DataFrame summarizing average insert time, search time,
-  and RAM consumption for each structure and dataset size. This script
-  is HPC-compatible and designed for integration into automated
-  performance testing pipelines.
+4.  **Repeats each test several times** (default is 5) to get more
+    reliable results.
 
-### Data Files
+5.  **Saves the results** as a CSV file:
 
-- [`data/df_anita.csv`](./data/df_anita.csv)  
+    - If you give your name, it saves as `data/df_<yourname>.csv`
+    - If not, it saves as `data/df.csv`
 
-- [`data/df_mburu.csv`](./data/df_mburu.csv)  
+6.  **Example usage from the command line:**
 
-- [`data/df_moses.csv`](./data/df_moses.csv)
+``` bash
+python main.py True moses 5
+```
 
-  The `data/` directory contains CSV files generated during benchmarking
-  runs. Each file corresponds to a specific experiment conducted by an
-  individual contributor. For instance, `df_anita.csv` and
-  `df_mburu.csv` capture the results of performance tests across various
-  input sizes and cases (average, best, and worst) for both `TSTree` and
-  `Btree` data structures. These datasets include key metrics such as
-  insertion time, search time, and memory usage, and serve both as a
-  performance baseline and as reproducible artifacts for further
-  analysis.
+This tells the script:
 
-### Documentation
+- You are running it on HPC (`True`)
+- Your name is Moses
+- Repeat each test 5 times
 
-- [`README.md`](./README.md)
+##### Output folder
 
-  The `README.md` file serves as the main documentation for this
-  project. It provides detailed setup instructions, usage guidelines,
-  benchmarking methodology, and explanations of key components such as
-  tree structures, dataset generation, and SLURM job submission on HPC
-  systems. This file is intended to help both contributors and users
-  understand, install, and run the project efficiently.
+The results are saved in the `data/` folder. This folder is created
+automatically if it doesn’t exist. You can use the CSV file for further
+analysis or plotting.
 
-- [`HPC_setup.md`](./tutorials/HPC_setup.md)
+#### [`requirements.txt`](./requirements.txt)
 
-  We detail the process of setting up the environment and running on the
-  HPC. Start by loading the appropriate Python module using module load
-  `Python/3.12.3-GCCcore-13.3.0`. Confirm the interpreter is correctly
-  set up by checking the path with which python and verifying the
-  version using `python --version`. Once confirmed, navigate to your
-  project directory (e.g., `~/cdsProject2025`) and set up a virtual
-  environment by running `python -m venv .venv`. Activate this
-  environment with `source .venv/bin/activate` every time you start a
-  new session. After activation, install dependencies from the
-  requirements.txt file using `pip install -r requirements.txt`.
-  Finally, execute your benchmarking script using `main.py`.
+This file lists all the Python packages our project needs to run.
 
-- [`SLURM.md`](./tutorials/SLURM.md)  
-  To run benchmarking scripts efficiently on a high-performance
-  computing (HPC) system, users should prepare a SLURM job script that
-  defines the job name, wall time, CPU and memory allocation, email
-  notifications, and partition/cluster selection. The job script should
-  load the appropriate module environment (e.g., Python 3.12.3 via
-  GCCcore 13.3.0), activate a Python virtual environment, and execute
-  the main Python script. Users must ensure the `logs/` directory exists
-  for output and error files, and must replace placeholders with valid
-  account, cluster, and email values. After writing the SLURM file
-  (e.g., `run_benchmark.slurm`), submit it using `sbatch`, monitor it
-  with `squeue` or `sacct`, and debug issues with guidance from typical
-  error patterns. This setup ensures reproducible and scalable execution
-  of experiments in batch-mode on VSC-managed clusters like Genius or
-  WICE.
+- We use **`pandas`** to handle and save our benchmark results (like
+  working with Excel or tables).
+- We use **`psutil`** to measure how much memory (RAM) our program uses
+  during testing.
 
-- [`docs/project_2024_2025.docx`](./docs/project_2024_2025.docx)
+This file helps make sure that **everyone runs the project with the same
+tools**, especially on shared systems like the HPC.
 
-  The `docs/project_2024_2025.docx` file contains the main written
-  report for the project. It documents the problem statement, design
-  decisions, benchmarking methodology, performance analysis, and final
-  conclusions. This report serves as the official deliverable for the
-  2024–2025 project cycle and complements the codebase by providing
-  theoretical context and critical evaluation of the results.
+After you turn on your Python environment, just run:
+
+``` bash
+pip install -r requirements.txt
+```
+
+This will install everything you need to run the project.
+
+#### [`tstree.py`](./src/tstree/tstree.py)
+
+This is the main tree we built and tested in our project, to compare
+against the Binary Search Tree from class.
+
+- Each node stores **one character**
+
+- It can link to:
+
+  - a **left child** for smaller characters,
+  - a **middle child** for the next letter in the word,
+  - and a **right child** for bigger characters.
+
+#### methods implemented
+
+- **Insert** new words.
+- **Search** for exact matches.
+- **List all stored words**.
+- **Print a tree structure**, to help you see how it looks.
+
+#### [`btree.py`](./src/btree/btree.py)
+
+This file contains the **`Btree` class**, a **Binary Search Tree (BST)**
+implementation based on the version taught in our **course lectures**.
+
+- Each node holds a **full word**.
+
+- It has:
+
+  - a **left child** for words that come before it alphabetically,
+  - a **right child** for words that come after.
+
+We use this as a **reference implementation** to compare against our
+`TSTree` (Ternary Search Tree).
+
+This helps us show where the TSTree performs better or worse than the
+standard BST from class.
 
 ### Testing & Experiments
 
-- [`src/tstree/test_tstree.py`](./src/tstree/test_tstree.py)
+#### [`benchmark.py`](./src/benchmark/benchmark.py)
 
-  The `src/tstree/test_tstree.py` file contains unit tests for the
-  `TSTree` class, ensuring correct behavior for core operations such as
-  insertion, search, and word enumeration. These tests are designed to
-  validate the tree’s functionality across a range of cases.
+This file contains the core functions for **testing how well our tree
+structures perform**.
 
-- [`test_py.py`](./test_py.py)
+1.  **Creates different types of word lists** for testing:
 
-  The `test_py.py` script is a standalone test utility focused on
-  validating sorting behavior in lists. It defines a helper function
-  `is_sorted()` that checks whether a list is in ascending order, then
-  applies it to sample datasets under best- and worst-case scenarios.
-  This script is primarily intended for quick debugging and exploratory
-  testing of list behavior.
+    - **Best case** – words with the same starting letters
+      (e.g. “apple”, “apply”, “appoint”). This is good for TSTs because
+      they reuse the prefix.
+    - **Worst case** – words like “a”, “aa”, “aaa”, …, which are known
+      to break BST performance.
+    - **Average case** – randomly generated words with no special
+      pattern.
 
-- [`test.ipynb`](./test.ipynb)
+2.  **Measures performance for each tree**:
 
-  The `test.ipynb` notebook is used for interactive testing and
-  visualization of utility functions relevant to data validation. It
-  includes basic helper functions such as `is_sorted()`, which checks
-  whether a list is in ascending order, and `have_same_elements()`,
-  which compares the contents of two lists regardless of order. The
-  notebook contains test cases for both functions, including edge cases,
-  and is useful for quick experimentation and debugging in a Jupyter
-  environment. Although plotting libraries like `matplotlib` and `numpy`
-  are commented out, the notebook is structured to support future
-  visualization and performance testing.
+    - How long it takes to insert the words into the tree.
+    - How long it takes to search for all the words in the tree.
+    - How much memory (RAM) the tree uses after inserting the words.
 
-- [`tests/plot_functions.py`](./tests/plot_functions.py)
+3.  **Repeats each test several times** to reduce random variation and
+    calculate averages.
 
-  The `tests/plot_functions.py` script provides a flexible plotting
-  utility for visualizing benchmarking results stored in CSV format. It
-  defines the `plot_facet_metrics()` function, which uses `Seaborn` and
-  `Matplotlib` to create facet grid line plots of various performance
-  metrics (e.g., insert time, search time, memory usage) across
-  different dataset sizes and test scenarios. The function automatically
-  reshapes the DataFrame, extracts labels from metric names (e.g.,
-  distinguishing `tst_insert` vs. `bst_search`), and renders one subplot
-  per metric type.
+4.  **Supports multiple trees**:
+
+    - Runs the same tests on both `TSTree` and `Btree`.
+
+    - Saves the results for each tree in columns like:
+
+      - `tst_insert`, `tst_search`, `tst_ram`
+      - `bst_insert`, `bst_search`, `bst_ram`
+
+5.  You can choose:
+
+    - The **number of words** to test with (dataset size).
+    - The **type of test case** (best, worst, or average).
+    - The **number of repetitions** for averaging.
+
+If you test `TSTree` and `Btree` with 10,000 random words:
+
+- It inserts all 10,000 words into each tree.
+- It searches for all 10,000 words.
+- It measures how much time and memory each tree uses.
+- It repeats this 5 times.
+- It returns the average results in a DataFrame.
+
+That DataFrame is then saved to CSV by the `main.py` script.
+
+#### [`plot_functions.py`](./src/benchmark/plot_functions.py)
+
+This file defines a function to **plot benchmark results**.
+
+It takes the output DataFrame from the benchmarking script and helps you
+**visualize how each tree performs** across different cases (best,
+worst, average) and sizes.
+
+1.  **Reads your benchmark results** – it expects columns like `size`,
+    `case`, and the actual performance metrics (e.g. `tst_insert`,
+    `bst_ram`).
+
+2.  **Reshapes the data** it turns wide columns into long format for
+    Seaborn plotting.
+
+3.  **Separates the metric column** into two parts:
+
+    - the **tree type** (e.g. `tst` or `bst`)
+    - the **test type** (e.g. `insert`, `search`, or `ram`)
+
+4.  **Draws a line plot** using Seaborn’s `relplot()`:
+
+    - x-axis: number of words (`size`)
+    - y-axis: performance (time or RAM)
+    - separate plots (facets) for each test type
+    - different lines for each case (best, worst, average)
+
+5.  Returns plot
+
+#### [bench.slurm](./bench.slurm)
+
+This is the SLURM job script we used to run our benchmarking tests on
+the HPC. It requests the needed resources, loads the required Python
+module, sets up and activates a virtual environment, installs any
+missing packages, and then runs `main.py` in HPC mode. It also saves
+logs to the `logs/` folder and sends email notifications to both group
+members.
+
+### Data Files
+
+#### - [Data files from runs](./data)
+
+Since this was a team project, we decided to save our benchmark results
+using our names.
+
+The `data/` folder contains CSV files from our tests:
+
+- `df_anita.csv` for Anita’s runs
+- `df_moses.csv` for Moses’ runs
+
+Each file stores the results of benchmarking the `TSTree` and `Btree`
+structures on different dataset sizes, tested under **best**, **worst**,
+and **average** cases.
+
+The data includes:
+
+- Time to insert
+- Time to search
+- Memory used
+
+### Documentation
+
+#### - [`README.md`](./README.md)
+
+We wrote our README using [**RMarkdown**](./README.rmd) , since it gives
+us more flexibility to include **text, plots, and code** in one place.
+It enables to directly knit directly to `.md` `github_document` format.
+
+#### - [`HPC_setup.md`](./tutorials/HPC_setup.md)
+
+This file is a guide that explains how to set up your Python environment
+and run the benchmark script on the HPC system.
+
+#### - [`SLURM.md`](./tutorials/SLURM.md)
+
+This file explains how to write and submit a SLURM job script to run the
+benchmark on an HPC system. It shows how to request resources, load
+modules, activate your environment, and run the script. It also includes
+tips for logging, setting your email, and tracking job progress.
+
+- [`docs/project_2024_2025.docx`](./docs/project_2024_2025.docx)
+
+  The `docs/project_2024_2025.docx` is the assignment file
 
 You can run any of the benchmark scripts using:
 
 ``` bash
 python main.py <True|False> [person_name]
 ```
+
+- where `<True|False>` indicates whether to run on HPC, and
+  `[person_name]` is an optional argument to specify the contributor’s
+  name for output file naming. This will generate a CSV file in the
+  `data/` directory with the results of the benchmark tests.
+
+### Results
 
 ``` python
 import pandas as pd
@@ -207,24 +279,75 @@ import os
 data_dir = "data/"
 files = [f for f in os.listdir(data_dir) if f.endswith('.csv')]
 data_frames = {}
+data_frames_list = []
 for file in files:
     file_path = os.path.join(data_dir, file)
     print(f"Loading {file_path}")
     df = pd.read_csv(file_path)
     data_frames[file] = df
+    data_frames_list.append(df)
 ```
 
     ## Loading data/df_moses.csv
+    ## Loading data/df_anita.csv
 
 ``` python
 ## print the names of the data frames
 # print("Data frames loaded:")
 # for name in data_frames.keys():
 #     print(name)
+
+df = pd.concat(data_frames_list, ignore_index=True)
 ```
 
+#### Summary Statistics
+
+We compared how fast and memory-efficient `TSTree` and `Btree` are
+across different input cases—**best**, **average**, and **worst**.
+
 ``` python
-from tests.plot_functions import plot_facet_metrics
+# Melt the dataframe to long format
+melted_df = df.melt(
+    id_vars=["case", "size"],
+    value_vars=[col for col in df.columns if col.startswith(("tst_", "bst_"))],
+    var_name="metric",
+    value_name="value"
+)
+
+
+melted_df["tree_type"] = melted_df["metric"].str.extract(r'^(tst|bst)')
+
+melted_df["metric"] = melted_df["metric"].str.extract(r'^[a-z]+_(.*)$')
+
+summary_stats = melted_df.groupby(["case", "tree_type", "metric"]).value.describe().round(3).reset_index()
+print(summary_stats.to_markdown(index=False)) # install tabulate to use this function
+```
+
+    ## | case    | tree_type   | metric   |   count |    mean |     std |   min |   25% |   50% |     75% |      max |
+    ## |:--------|:------------|:---------|--------:|--------:|--------:|------:|------:|------:|--------:|---------:|
+    ## | average | bst         | insert   |      20 |   0.025 |   0.03  | 0     | 0.004 | 0.007 |   0.045 |    0.1   |
+    ## | average | bst         | ram      |      20 |   0     |   0     | 0     | 0     | 0     |   0     |    0     |
+    ## | average | bst         | search   |      20 |   0.016 |   0.02  | 0     | 0.003 | 0.005 |   0.027 |    0.065 |
+    ## | average | tst         | insert   |      20 |   0.119 |   0.141 | 0.001 | 0.018 | 0.04  |   0.23  |    0.407 |
+    ## | average | tst         | ram      |      20 |   2.627 |   3.633 | 0     | 0     | 0.466 |   5.119 |   11.685 |
+    ## | average | tst         | search   |      20 |   0.034 |   0.04  | 0.001 | 0.006 | 0.013 |   0.063 |    0.127 |
+    ## | best    | bst         | insert   |      20 |   0.018 |   0.02  | 0     | 0.003 | 0.007 |   0.027 |    0.068 |
+    ## | best    | bst         | ram      |      20 |   0.018 |   0.034 | 0     | 0     | 0     |   0.009 |    0.108 |
+    ## | best    | bst         | search   |      20 |   0.011 |   0.012 | 0     | 0.002 | 0.003 |   0.017 |    0.038 |
+    ## | best    | tst         | insert   |      20 |   0.033 |   0.037 | 0.001 | 0.006 | 0.013 |   0.054 |    0.115 |
+    ## | best    | tst         | ram      |      20 |   0.181 |   0.179 | 0     | 0.036 | 0.126 |   0.29  |    0.551 |
+    ## | best    | tst         | search   |      20 |   0.021 |   0.024 | 0.001 | 0.004 | 0.007 |   0.035 |    0.075 |
+    ## | worst   | bst         | insert   |      20 | 223.552 | 410.988 | 0.013 | 0.583 | 2.053 | 223.288 | 1424.63  |
+    ## | worst   | bst         | ram      |      20 |   0.074 |   0.065 | 0     | 0.023 | 0.07  |   0.108 |    0.22  |
+    ## | worst   | bst         | search   |      20 | 188.603 | 343.924 | 0.011 | 0.49  | 1.613 | 194.091 | 1187.9   |
+    ## | worst   | tst         | insert   |      20 |  41.078 |  65.158 | 0.02  | 0.779 | 2.25  |  56.053 |  207.884 |
+    ## | worst   | tst         | ram      |      20 |   0.276 |   0.238 | 0     | 0.139 | 0.19  |   0.382 |    1.005 |
+    ## | worst   | tst         | search   |      20 |  40.528 |  64.167 | 0.021 | 0.75  | 2.264 |  55.173 |  204.275 |
+
+#### Plots
+
+``` python
+from src.benchmark.plot_functions import plot_facet_metrics
 import matplotlib.pyplot as plt
 
 for name, df in data_frames.items():
@@ -249,7 +372,75 @@ for name, df in data_frames.items():
         print(f"DataFrame {clean_name} lacks required 'size' column")
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-2-1.png" width="1451" />
+<img src="README_files/figure-gfm/unnamed-chunk-3-1.png" width="1451" /><img src="README_files/figure-gfm/unnamed-chunk-3-2.png" width="1451" />
 
-[Top coder tst
-trees](https://www.topcoder.com/thrive/articles/ternary-search-trees#:~:text=Ternary%20search%20trees%20are%20a,consumes%20a%20lot%20of%20memory)
+``` python
+best_bst_ins   = summary_stats.query("case=='best'   & tree_type=='bst' & metric=='insert'")["mean"]
+best_bst_srch  =  summary_stats.query("case=='best'   & tree_type=='bst' & metric=='search'")["mean"]
+best_tst_ins   =  summary_stats.query("case=='best'   & tree_type=='tst' & metric=='insert'")["mean"]
+best_tst_srch  =  summary_stats.query("case=='best'   & tree_type=='tst' & metric=='search'")["mean"]
+
+avg_bst_ins    =  summary_stats.query("case=='average' & tree_type=='bst' & metric=='insert'")["mean"]
+avg_tst_ins    =  summary_stats.query("case=='average' & tree_type=='tst' & metric=='insert'")["mean"]
+avg_bst_srch   =  summary_stats.query("case=='average' & tree_type=='bst' & metric=='search'")["mean"]
+avg_tst_srch   =  summary_stats.query("case=='average' & tree_type=='tst' & metric=='search'")["mean"]
+
+worst_bst_ins  =  summary_stats.query("case=='worst'  & tree_type=='bst' & metric=='insert'")["mean"]
+worst_bst_srch =  summary_stats.query("case=='worst'  & tree_type=='bst' & metric=='search'")["mean"]
+worst_tst_ins  =  summary_stats.query("case=='worst'  & tree_type=='tst' & metric=='insert'")["mean"]
+worst_tst_srch =  summary_stats.query("case=='worst'  & tree_type=='tst' & metric=='search'")["mean"]
+```
+
+##### Insert and Search Time
+
+- In the **best case** both trees were fast, but `Btree` was faster.
+
+  - `Btree`: insert $\approx$ 0.018 s, search $\approx$ 0.011 s  
+  - `TSTree`: insert $\approx$ 0.033 s, search $\approx$ 0.021 s
+
+- In the **average case** the gap grows.
+
+  - `Btree`: insert $\approx$ 0.025 s, search $\approx$ 0.016 s
+  - `TSTree`: insert $\approx$ 0.119 s, search $\approx$ 0.034 s  
+    so `TSTree` was about **0.2×** slower here.
+
+- In the **worst case** the difference is huge.
+
+  - `Btree`: insert $\approx$ 224 s, search $\approx$ 189 s  
+  - `TSTree`: insert $\approx$ 41 s, search $\approx$ 41 s  
+    so `TSTree` was about **5.4×** faster here.
+
+This shows that `TSTree` handles bad cases much better than `Btree`,
+especially when words share long prefixes.
+
+##### Memory Use
+
+- `Btree` used almost no memory in best and average cases.
+
+- `TSTree` used more memory throughout:
+
+  - Average case: $\approx$ 4.88 MB
+  - Worst case: $\approx$ 0.41 MB
+
+Even though `TSTree` used more RAM, it stayed within reasonable limits.
+
+### Conclusion
+
+- `Btree` is **very fast** and **lightweight** when input is random or
+  sorted alphabetically.
+- `TSTree` is **slightly slower** in simple cases, but much **faster and
+  more stable** in worst-case scenarios (e.g., when words are nested
+  like `"a"`, `"aa"`, `"aaa"`, …).
+- So if you expect structured or repetitive input, `TSTree` is the
+  better choice. Otherwise, `Btree` is fine and faster.
+
+These results match what we see in the plots—`TSTree` grows more
+steadily while `Btree` slows down a lot as size increases under bad
+inputs.
+
+### References
+
+- [Top coder tst
+  trees](https://www.topcoder.com/thrive/articles/ternary-search-trees#:~:text=Ternary%20search%20trees%20are%20a,consumes%20a%20lot%20of%20memory)
+
+- <https://en.wikipedia.org/wiki/Ternary_search_tree>
