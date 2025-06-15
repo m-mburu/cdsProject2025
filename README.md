@@ -3,8 +3,8 @@ Project Concepts of Data Science 2024-2025
 
 Students:
 
-- **Anita Kerubo \[2469491\]**
-- **Moses Mburu \[2469245\]**
+- **Anita Kerubo**
+- **Moses Mburu**
 
 ## Project Structure
 
@@ -204,7 +204,7 @@ worst, average) and sizes.
 
 5.  Returns plot
 
-#### [bench.slurm](./bench.slurm)
+#### [bench.slurm](./bench.slurm) and [run_bench.slurm](./run_bench.slurm)
 
 This is the SLURM job script we used to run our benchmarking tests on
 the HPC. It requests the needed resources, loads the required Python
@@ -222,8 +222,8 @@ using our names.
 
 The `data/` folder contains CSV files from our tests:
 
-- `df_anita.csv` for Anita’s runs
-- `df_moses.csv` for Moses’ runs
+- `df_vsc37481.csv` for Anita’s runs
+- `df_vsc37482.csv` for Moses’ runs
 
 Each file stores the results of benchmarking the `TSTree` and `Btree`
 structures on different dataset sizes, tested under **best**, **worst**,
@@ -288,8 +288,8 @@ for file in files:
     data_frames_list.append(df)
 ```
 
-    ## Loading data/df_moses.csv
-    ## Loading data/df_anita.csv
+    ## Loading data/df_vsc37481.csv
+    ## Loading data/df_vsc37482.csv
 
 ``` python
 ## print the names of the data frames
@@ -323,26 +323,26 @@ summary_stats = melted_df.groupby(["case", "tree_type", "metric"]).value.describ
 print(summary_stats.to_markdown(index=False)) # install tabulate to use this function
 ```
 
-    ## | case    | tree_type   | metric   |   count |    mean |     std |   min |   25% |   50% |     75% |      max |
-    ## |:--------|:------------|:---------|--------:|--------:|--------:|------:|------:|------:|--------:|---------:|
-    ## | average | bst         | insert   |      20 |   0.025 |   0.03  | 0     | 0.004 | 0.007 |   0.045 |    0.1   |
-    ## | average | bst         | ram      |      20 |   0     |   0     | 0     | 0     | 0     |   0     |    0     |
-    ## | average | bst         | search   |      20 |   0.016 |   0.02  | 0     | 0.003 | 0.005 |   0.027 |    0.065 |
-    ## | average | tst         | insert   |      20 |   0.119 |   0.141 | 0.001 | 0.018 | 0.04  |   0.23  |    0.407 |
-    ## | average | tst         | ram      |      20 |   2.627 |   3.633 | 0     | 0     | 0.466 |   5.119 |   11.685 |
-    ## | average | tst         | search   |      20 |   0.034 |   0.04  | 0.001 | 0.006 | 0.013 |   0.063 |    0.127 |
-    ## | best    | bst         | insert   |      20 |   0.018 |   0.02  | 0     | 0.003 | 0.007 |   0.027 |    0.068 |
-    ## | best    | bst         | ram      |      20 |   0.018 |   0.034 | 0     | 0     | 0     |   0.009 |    0.108 |
-    ## | best    | bst         | search   |      20 |   0.011 |   0.012 | 0     | 0.002 | 0.003 |   0.017 |    0.038 |
-    ## | best    | tst         | insert   |      20 |   0.033 |   0.037 | 0.001 | 0.006 | 0.013 |   0.054 |    0.115 |
-    ## | best    | tst         | ram      |      20 |   0.181 |   0.179 | 0     | 0.036 | 0.126 |   0.29  |    0.551 |
-    ## | best    | tst         | search   |      20 |   0.021 |   0.024 | 0.001 | 0.004 | 0.007 |   0.035 |    0.075 |
-    ## | worst   | bst         | insert   |      20 | 223.552 | 410.988 | 0.013 | 0.583 | 2.053 | 223.288 | 1424.63  |
-    ## | worst   | bst         | ram      |      20 |   0.074 |   0.065 | 0     | 0.023 | 0.07  |   0.108 |    0.22  |
-    ## | worst   | bst         | search   |      20 | 188.603 | 343.924 | 0.011 | 0.49  | 1.613 | 194.091 | 1187.9   |
-    ## | worst   | tst         | insert   |      20 |  41.078 |  65.158 | 0.02  | 0.779 | 2.25  |  56.053 |  207.884 |
-    ## | worst   | tst         | ram      |      20 |   0.276 |   0.238 | 0     | 0.139 | 0.19  |   0.382 |    1.005 |
-    ## | worst   | tst         | search   |      20 |  40.528 |  64.167 | 0.021 | 0.75  | 2.264 |  55.173 |  204.275 |
+    ## | case    | tree_type   | metric   |   count |    mean |     std |   min |    25% |     50% |     75% |      max |
+    ## |:--------|:------------|:---------|--------:|--------:|--------:|------:|-------:|--------:|--------:|---------:|
+    ## | average | bst         | insert   |      20 |   0.067 |   0.048 | 0.005 |  0.029 |   0.055 |   0.099 |    0.168 |
+    ## | average | bst         | ram      |      20 |   0.032 |   0.061 | 0     |  0     |   0     |   0.013 |    0.161 |
+    ## | average | bst         | search   |      20 |   0.048 |   0.036 | 0.004 |  0.02  |   0.039 |   0.067 |    0.129 |
+    ## | average | tst         | insert   |      20 |   0.272 |   0.192 | 0.028 |  0.085 |   0.255 |   0.402 |    0.607 |
+    ## | average | tst         | ram      |      20 |   4.563 |   3.704 | 0     |  0.162 |   5.08  |   7.129 |   11.685 |
+    ## | average | tst         | search   |      20 |   0.102 |   0.078 | 0.009 |  0.042 |   0.078 |   0.151 |    0.263 |
+    ## | best    | bst         | insert   |      20 |   0.042 |   0.028 | 0.003 |  0.02  |   0.037 |   0.06  |    0.101 |
+    ## | best    | bst         | ram      |      20 |   0.03  |   0.042 | 0     |  0     |   0     |   0.072 |    0.108 |
+    ## | best    | bst         | search   |      20 |   0.028 |   0.019 | 0.003 |  0.012 |   0.025 |   0.039 |    0.069 |
+    ## | best    | tst         | insert   |      20 |   0.079 |   0.048 | 0.013 |  0.042 |   0.071 |   0.108 |    0.179 |
+    ## | best    | tst         | ram      |      20 |   0.287 |   0.122 | 0.053 |  0.216 |   0.252 |   0.368 |    0.551 |
+    ## | best    | tst         | search   |      20 |   0.058 |   0.04  | 0.006 |  0.026 |   0.052 |   0.078 |    0.143 |
+    ## | worst   | bst         | insert   |      20 | 586.902 | 697.106 | 1.785 | 58.763 | 313.253 | 871.666 | 2609.28  |
+    ## | worst   | bst         | ram      |      20 |   0.058 |   0.072 | 0     |  0     |   0.016 |   0.114 |    0.218 |
+    ## | worst   | bst         | search   |      20 | 480.628 | 552.654 | 1.462 | 51.302 | 267.666 | 717.094 | 2018.9   |
+    ## | worst   | tst         | insert   |      20 | 116.627 | 110.065 | 1.903 | 28.266 |  89.212 | 185.427 |  386.322 |
+    ## | worst   | tst         | ram      |      20 |   0.221 |   0.272 | 0     |  0     |   0.156 |   0.345 |    1.005 |
+    ## | worst   | tst         | search   |      20 | 115.648 | 109.364 | 1.834 | 28.123 |  88.56  | 182.559 |  384.443 |
 
 #### Plots
 
@@ -395,20 +395,20 @@ worst_tst_srch =  summary_stats.query("case=='worst'  & tree_type=='tst' & metri
 
 - In the **best case** both trees were fast, but `Btree` was faster.
 
-  - `Btree`: insert $\approx$ 0.018 s, search $\approx$ 0.011 s  
-  - `TSTree`: insert $\approx$ 0.033 s, search $\approx$ 0.021 s
+  - `Btree`: insert $\approx$ 0.042 s, search $\approx$ 0.028 s  
+  - `TSTree`: insert $\approx$ 0.079 s, search $\approx$ 0.058 s
 
 - In the **average case** the gap grows.
 
-  - `Btree`: insert $\approx$ 0.025 s, search $\approx$ 0.016 s
-  - `TSTree`: insert $\approx$ 0.119 s, search $\approx$ 0.034 s  
+  - `Btree`: insert $\approx$ 0.067 s, search $\approx$ 0.048 s
+  - `TSTree`: insert $\approx$ 0.272 s, search $\approx$ 0.102 s  
     so `TSTree` was about **0.2×** slower here.
 
 - In the **worst case** the difference is huge.
 
-  - `Btree`: insert $\approx$ 224 s, search $\approx$ 189 s  
-  - `TSTree`: insert $\approx$ 41 s, search $\approx$ 41 s  
-    so `TSTree` was about **5.4×** faster here.
+  - `Btree`: insert $\approx$ 587 s, search $\approx$ 481 s  
+  - `TSTree`: insert $\approx$ 117 s, search $\approx$ 116 s  
+    so `TSTree` was about **5×** faster here.
 
 This shows that `TSTree` handles bad cases much better than `Btree`,
 especially when words share long prefixes.

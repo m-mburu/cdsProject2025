@@ -19,8 +19,8 @@ library(reticulate)
 
 Students:
 
-- **Anita Kerubo [2469491]** 
-- **Moses Mburu [2469245]** 
+- **Anita Kerubo** 
+- **Moses Mburu** 
 
 
 
@@ -205,7 +205,7 @@ It takes the output DataFrame from the benchmarking script and helps you **visua
 
 5. Returns plot
 
-#### [bench.slurm](./bench.slurm)
+#### [bench.slurm](./bench.slurm) and [run_bench.slurm](./run_bench.slurm)
 
 This is the SLURM job script we used to run our benchmarking tests on the HPC. It requests the needed resources, loads the required Python module, sets up and activates a virtual environment, installs any missing packages, and then runs `main.py` in HPC mode. It also saves logs to the `logs/` folder and sends email notifications to both group members.
 
@@ -218,8 +218,8 @@ Since this was a team project, we decided to save our benchmark results using ou
 
 The `data/` folder contains CSV files from our tests:
 
-* `df_anita.csv` for Anita’s runs
-* `df_moses.csv` for Moses’ runs
+* `df_vsc37481.csv` for Anita’s runs
+* `df_vsc37482.csv` for Moses’ runs
 
 Each file stores the results of benchmarking the `TSTree` and `Btree` structures on different dataset sizes, tested under **best**, **worst**, and **average** cases.
 
